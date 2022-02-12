@@ -9,6 +9,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -23,6 +26,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
+import java.util.Map;
+
 /**
  *
  * Need to allow the updateUI to occur when mCurrentLocation is updated
@@ -31,6 +36,10 @@ import com.google.android.gms.maps.model.LatLngBounds;
 
 public class AppleTeaFragment extends SupportMapFragment {
     private static final String TAG = "AppleTeaFragment";
+
+
+    //new way to request permissions
+
 
     //array that lists all the permissions needed
     private static final String[] LOCATION_PERMISSIONS = new String[]{
@@ -126,7 +135,10 @@ public class AppleTeaFragment extends SupportMapFragment {
                 if(hasLocationPermission()) {
                     findLocation();
                 } else {
-                    requestPermissions(LOCATION_PERMISSIONS,REQUEST_LOCATION_PERMISSIONS);
+                    //requestPermissions(LOCATION_PERMISSIONS,REQUEST_LOCATION_PERMISSIONS);
+                    requestPermissionLauncher.launch(
+                            LOCATION_PERMISSIONS);
+                            //Manifest.permission.ACCESS_FINE_LOCATION);
                 }
                 return true;
             default :
@@ -134,9 +146,26 @@ public class AppleTeaFragment extends SupportMapFragment {
         }
     }
 
+
+
+    /**
+     * Updated callback to check whether you obtained the permission or not
+     */
+    private ActivityResultLauncher<String[]> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(),
+                    new ActivityResultCallback<Map<String, Boolean>>() {
+                @Override
+                public void onActivityResult(Map<String, Boolean> result) {
+                    if (result.get(Manifest.permission.ACCESS_COARSE_LOCATION) != null &&
+                        result.get(Manifest.permission.ACCESS_FINE_LOCATION) != null){
+                        findLocation();
+                    }
+                }
+            });
+
     /**
      * Callback to check whether you obtained the permission or not
-     */
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
@@ -149,6 +178,8 @@ public class AppleTeaFragment extends SupportMapFragment {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
+    */
 
 
 
