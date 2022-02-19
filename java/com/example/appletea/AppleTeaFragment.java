@@ -23,16 +23,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Map;
-
-/**
- *
- * Need to allow the updateUI to occur when mCurrentLocation is updated
- */
-
 
 public class AppleTeaFragment extends SupportMapFragment {
     private static final String TAG = "AppleTeaFragment";
@@ -75,6 +72,17 @@ public class AppleTeaFragment extends SupportMapFragment {
                     @Override
                     public void onConnected(Bundle bundle) {
                         getActivity().invalidateOptionsMenu();
+                        /**
+                         * Once we are connected, attempt to get current location
+                         */
+                        if(hasLocationPermission()) {
+                            findLocation();
+                        } else {
+                            //requestPermissions(LOCATION_PERMISSIONS,REQUEST_LOCATION_PERMISSIONS);
+                            requestPermissionLauncher.launch(
+                                    LOCATION_PERMISSIONS);
+                            //Manifest.permission.ACCESS_FINE_LOCATION);
+                        }
                     }
 
                     @Override
@@ -135,10 +143,8 @@ public class AppleTeaFragment extends SupportMapFragment {
                 if(hasLocationPermission()) {
                     findLocation();
                 } else {
-                    //requestPermissions(LOCATION_PERMISSIONS,REQUEST_LOCATION_PERMISSIONS);
                     requestPermissionLauncher.launch(
                             LOCATION_PERMISSIONS);
-                            //Manifest.permission.ACCESS_FINE_LOCATION);
                 }
                 return true;
             default :
@@ -235,12 +241,18 @@ public class AppleTeaFragment extends SupportMapFragment {
         LatLng myPoint = new LatLng(
                 mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
+
+        MarkerOptions myMarker = new MarkerOptions().position(myPoint);
+
+        mMap.clear();
+        mMap.addMarker(myMarker);
+
         LatLngBounds bounds = new LatLngBounds.Builder()
                 .include(myPoint)
                 .build();
 
         int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin);
-        CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, margin);
+        CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 100);
         mMap.animateCamera(update);
     }
 
