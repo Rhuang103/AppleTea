@@ -1,6 +1,7 @@
 package com.example.appletea;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -23,16 +24,13 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Map;
-
-/**
- *
- * Need to allow the updateUI to occur when mCurrentLocation is updated
- */
-
 
 public class AppleTeaFragment extends SupportMapFragment {
     private static final String TAG = "AppleTeaFragment";
@@ -75,6 +73,17 @@ public class AppleTeaFragment extends SupportMapFragment {
                     @Override
                     public void onConnected(Bundle bundle) {
                         getActivity().invalidateOptionsMenu();
+                        /**
+                         * Once we are connected, attempt to get current location
+                         */
+                        if(hasLocationPermission()) {
+                            findLocation();
+                        } else {
+                            //requestPermissions(LOCATION_PERMISSIONS,REQUEST_LOCATION_PERMISSIONS);
+                            requestPermissionLauncher.launch(
+                                    LOCATION_PERMISSIONS);
+                            //Manifest.permission.ACCESS_FINE_LOCATION);
+                        }
                     }
 
                     @Override
@@ -122,9 +131,12 @@ public class AppleTeaFragment extends SupportMapFragment {
         inflater.inflate(R.menu.fragement_appletea, menu);
 
         MenuItem searchItem = menu.findItem(R.id.action_locate);
+        MenuItem addItem = menu.findItem(R.id.add_to_list);
 
         //enables action_locate buttons if client is connected
         searchItem.setEnabled(mClient.isConnected());
+
+        addItem.setEnabled(true);
     }
 
     //Hooks up the search button to execute a function
@@ -135,12 +147,16 @@ public class AppleTeaFragment extends SupportMapFragment {
                 if(hasLocationPermission()) {
                     findLocation();
                 } else {
-                    //requestPermissions(LOCATION_PERMISSIONS,REQUEST_LOCATION_PERMISSIONS);
                     requestPermissionLauncher.launch(
                             LOCATION_PERMISSIONS);
-                            //Manifest.permission.ACCESS_FINE_LOCATION);
                 }
                 return true;
+            case R.id.add_to_list:
+                //Takes the current location data and adds it to a list
+                //Intent intent = new Intent(getActivity(), FoodListActivity.class);
+                Intent intent = FoodListActivity.newIntent(getActivity(), mCurrentLocation);
+                startActivity(intent);
+
             default :
                 return super.onOptionsItemSelected(item);
         }
@@ -235,12 +251,18 @@ public class AppleTeaFragment extends SupportMapFragment {
         LatLng myPoint = new LatLng(
                 mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
+
+        MarkerOptions myMarker = new MarkerOptions().position(myPoint);
+
+        mMap.clear();
+        mMap.addMarker(myMarker);
+
         LatLngBounds bounds = new LatLngBounds.Builder()
                 .include(myPoint)
                 .build();
 
         int margin = getResources().getDimensionPixelSize(R.dimen.map_inset_margin);
-        CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, margin);
+        CameraUpdate update = CameraUpdateFactory.newLatLngBounds(bounds, 100);
         mMap.animateCamera(update);
     }
 
