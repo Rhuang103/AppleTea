@@ -8,6 +8,11 @@ import androidx.fragment.app.Fragment;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+/**
+ * Displays google map and exactly where you are.
+ *
+ * This is the launcher activity
+ */
 public class AppleTeaActivity extends SingleFragmentActivity {
     private static final int REQUEST_ERROR=0;
 
