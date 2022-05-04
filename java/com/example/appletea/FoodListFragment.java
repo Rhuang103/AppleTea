@@ -1,5 +1,6 @@
 package com.example.appletea;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.Layout;
@@ -16,9 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-/**
- * Currently, LOCATION DATA is null
- */
 
 public class FoodListFragment extends Fragment {
     private static final String TAG = "FoodTeaFragment";
@@ -35,9 +33,6 @@ public class FoodListFragment extends Fragment {
         //Location object is Parcelable instead of Serializable
         foodLocation = getActivity().getIntent()
                 .getParcelableExtra(FoodListActivity.LOCATION_DATA);
-
-
-
     }
 
     @Override
@@ -60,6 +55,12 @@ public class FoodListFragment extends Fragment {
         updateUI();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
     }
 
     /**
@@ -86,10 +87,15 @@ public class FoodListFragment extends Fragment {
             mBestFoodTextView.setText(mRestaurant.getBestFood());
         }
 
+        /**
+         * When a item on the list is clicked, it opens up a restaurant info view
+         */
         @Override
         public void onClick (View view) {
-            Toast.makeText(getActivity(), mRestaurant.getTitle() + "clicked!",
-                    Toast.LENGTH_SHORT).show();
+            //Intent intent = new Intent(getActivity(), RestaurantInfoActivity.class);
+            Intent intent = RestaurantInfoActivity.pullIntent(getActivity(), mRestaurant.getId(),
+                    "FoodListActivity");
+            startActivity(intent);
         }
     }
 
@@ -127,8 +133,12 @@ public class FoodListFragment extends Fragment {
         FoodLab foodLab = FoodLab.get(getActivity());
         List<Restaurant> restaurants = foodLab.getRestaurants();
 
-        mAdapter = new FoodAdapter(restaurants);
-        mFoodRecyclerView.setAdapter(mAdapter);
+        if(mAdapter == null) {
+            mAdapter = new FoodAdapter(restaurants);
+            mFoodRecyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
 }

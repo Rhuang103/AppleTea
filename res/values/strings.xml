@@ -2,6 +2,6 @@
     <string name="app_name">AppleTea</string>
     <string name="search">Find where you are</string>
     <string name="title_activity_maps">Map</string>
-    <string name="restaurant_title_label">Title</string>
+    <string name="restaurant_title_label">Enter Restaurant Name</string>
     <string name="restaurant_details_label">Details</string>
 </resources>
