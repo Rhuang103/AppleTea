@@ -1,24 +1,19 @@
 package com.example.appletea;
 
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
-
-/**
- * Currently, LOCATION DATA is null
- */
 
 public class FoodListFragment extends Fragment {
     private static final String TAG = "FoodTeaFragment";
@@ -35,9 +30,6 @@ public class FoodListFragment extends Fragment {
         //Location object is Parcelable instead of Serializable
         foodLocation = getActivity().getIntent()
                 .getParcelableExtra(FoodListActivity.LOCATION_DATA);
-
-
-
     }
 
     @Override
@@ -62,6 +54,12 @@ public class FoodListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
     /**
      * Inflated the ViewHolder class with list_item_food layout so it is used as a template
      * to create the recycler view list
@@ -83,13 +81,18 @@ public class FoodListFragment extends Fragment {
         public void bind(Restaurant restaurant) {
             mRestaurant = restaurant;
             mTitleTextView.setText(mRestaurant.getTitle());
-            mBestFoodTextView.setText(mRestaurant.getBestFood());
+            mBestFoodTextView.setText(mRestaurant.getDetails());
         }
 
+        /**
+         * When a item on the list is clicked, it opens up a restaurant info view
+         */
         @Override
         public void onClick (View view) {
-            Toast.makeText(getActivity(), mRestaurant.getTitle() + "clicked!",
-                    Toast.LENGTH_SHORT).show();
+            //Intent intent = new Intent(getActivity(), RestaurantInfoActivity.class);
+            Intent intent = RestaurantInfoActivity.pullIntent(getActivity(), mRestaurant.getId(),
+                    "FoodListActivity");
+            startActivity(intent);
         }
     }
 
@@ -121,14 +124,23 @@ public class FoodListFragment extends Fragment {
         public int getItemCount() {
             return mRestauarants.size();
         }
+
+        public void setRestaurants(List<Restaurant> restaurants) {
+            mRestauarants = restaurants;
+        }
     }
 
     private void updateUI() {
         FoodLab foodLab = FoodLab.get(getActivity());
         List<Restaurant> restaurants = foodLab.getRestaurants();
 
-        mAdapter = new FoodAdapter(restaurants);
-        mFoodRecyclerView.setAdapter(mAdapter);
+        if(mAdapter == null) {
+            mAdapter = new FoodAdapter(restaurants);
+            mFoodRecyclerView.setAdapter(mAdapter);
+        } else {
+            mAdapter.setRestaurants(restaurants);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
 }
