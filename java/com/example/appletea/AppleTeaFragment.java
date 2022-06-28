@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class AppleTeaFragment extends SupportMapFragment {
     private static final String TAG = "AppleTeaFragment";
@@ -132,11 +133,13 @@ public class AppleTeaFragment extends SupportMapFragment {
 
         MenuItem searchItem = menu.findItem(R.id.action_locate);
         MenuItem addItem = menu.findItem(R.id.add_to_list);
+        MenuItem itemList = menu.findItem(R.id.item_list);
 
         //enables action_locate buttons if client is connected
         searchItem.setEnabled(mClient.isConnected());
 
         addItem.setEnabled(true);
+        itemList.setEnabled(true);
     }
 
     //Hooks up the search button to execute a function
@@ -154,9 +157,20 @@ public class AppleTeaFragment extends SupportMapFragment {
             case R.id.add_to_list:
                 //Takes the current location data and adds it to a list
                 //Intent intent = new Intent(getActivity(), FoodListActivity.class);
-                Intent intent = FoodListActivity.newIntent(getActivity(), mCurrentLocation);
-                startActivity(intent);
+                //Intent intent = FoodListActivity.newIntent(getActivity(), mCurrentLocation);
+                Restaurant restaurant = new Restaurant();
+                FoodLab.get(getActivity()).addRestaurant(restaurant);
 
+                UUID mRestaurantId = restaurant.getId();
+                //Log.i(TAG, "Found Location :" + mCurrentLocation);
+                Intent intent = RestaurantInfoActivity.newIntent(getActivity(), mRestaurantId,
+                        mCurrentLocation, "AppleTeaActivity");
+                startActivity(intent);
+                return true;
+            case R.id.item_list:
+                Intent intentList = FoodListActivity.newIntent(getActivity(), mCurrentLocation);
+                startActivity(intentList);
+                return true;
             default :
                 return super.onOptionsItemSelected(item);
         }

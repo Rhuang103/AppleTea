@@ -46,6 +46,10 @@
             android:name=".FoodListActivity"
             android:parentActivityName=".AppleTeaActivity">
         </activity>
+        <activity
+            android:name=".RestaurantInfoActivity"
+            android:parentActivityName=".AppleTeaActivity">
+        </activity>
     </application>
 
 </manifest>

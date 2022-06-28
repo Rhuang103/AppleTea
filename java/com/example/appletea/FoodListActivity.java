@@ -22,6 +22,4 @@ public class FoodListActivity extends SingleFragmentActivity {
         return intent;
     }
 
-
-
 }

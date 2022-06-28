@@ -7,15 +7,39 @@
     android:orientation="vertical">
 
     <TextView
-        style="?android:listSeparatorTextViewStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/restaurant_title_label"/>
+        android:text="Title"
+        style="?android:listSeparatorTextViewStyle"/>
 
     <EditText
         android:id="@+id/restuarant_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:hint="@string/restaurant_title_label"/>
+
+    <EditText
+        android:id="@+id/restuarant_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:hint="@string/restaurant_details_label"/>
+
+    <TextView
+        android:id="@+id/address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Address" />
+
+    <TextView
+        android:id="@+id/latitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Latitude" />
+
+    <TextView
+        android:id="@+id/longitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Longitude" />
 
 </LinearLayout>
